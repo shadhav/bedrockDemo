@@ -3,7 +3,7 @@ Welcome to the bedrockDemo repository! This guide will assist you in setting up 
 
 ## Installation 
 - Clone this repository into your local development environment using VS Code
-- Check the[IAM Permission](https://github.com/shadhav/bedrockDemo/blob/main/README.md#iam-permission) before you proceed ahead 
+- Check the [IAM Permission](https://github.com/shadhav/bedrockDemo/blob/main/README.md#iam-permission) before you proceed ahead 
 - Open the terminal in the VS code
 - Naviage to the working directory path in the terminal
 ```/Users/shadhav/Documents/bedrockDemo/flask ``` the path will look like this 
