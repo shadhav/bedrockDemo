@@ -61,12 +61,10 @@ your preferred browser.
 }
 ```
 # UI of the app 
-
-
 ![BedRock UI](flask/BedRockUI.png)
 
-
+## UI of the summarization page
 ![Summarization UI](flask/SummarizationUI.png)
 
-
+## UI of the chatbot page
 ![Chatbot UI](flask/TitanChatBot.png)
