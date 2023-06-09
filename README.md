@@ -60,3 +60,13 @@ your preferred browser.
   ]
 }
 ```
+# USer Interfaces of the app 
+
+
+![BedRock UI](../BedRockUI.png)
+
+
+![Summarization UI](flask/SummarizationUI.png)
+
+
+![Chatbot UI](flask/TitanChatBot.png)
