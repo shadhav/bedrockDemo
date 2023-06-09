@@ -60,7 +60,7 @@ your preferred browser.
   ]
 }
 ```
-# USer Interfaces of the app 
+# UI of the app 
 
 
 ![BedRock UI](flask/BedRockUI.png)
