@@ -63,7 +63,7 @@ your preferred browser.
 # USer Interfaces of the app 
 
 
-![BedRock UI](../BedRockUI.png)
+![BedRock UI](flask/BedRockUI.png)
 
 
 ![Summarization UI](flask/SummarizationUI.png)
