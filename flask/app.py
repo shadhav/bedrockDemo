@@ -44,6 +44,26 @@ def index3():
 def index5():
     return render_template('index5.html')
 
+@app.route('/titan')
+def titan():
+    return render_template('titan.html')
+
+@app.route('/claude')
+def claude():
+    return render_template('claude.html')
+
+@app.route('/stablediffusion')
+def stablediffusion():
+    return render_template('stablediffusion.html')
+
+@app.route('/index1')
+def index1():
+    return render_template('index1.html')
+
+@app.route('/indexall')
+def indexall():
+    return render_template('indexall.html')
+
 
 #Titan API Call
 @app.route('/api/call-python1', methods=['POST'])
