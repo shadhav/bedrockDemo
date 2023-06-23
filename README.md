@@ -9,6 +9,11 @@ Welcome to the bedrockDemo repository! This guide will assist you in setting up 
 ```/Users/shadhav/Documents/bedrockDemo/flask ``` the path will look like this 
 - In this path in the terminal install flask 
 ```pip install flask```
+```pip install boto3-1.26.140-py3-none-any.whl --quiet```
+```pip install botocore-1.29.140-py3-none-any.whl --quiet```
+```pip install faiss-cpu==1.7.4 --quiet```
+```pip install pypdf==3.8.1 --quiet```
+```pip install langchain==0.0.190 --quiet```
 - Once these steps are completed, you are ready to proceed with the BedRock demo using VS Code. 
 - Run this command 
 ```flask run```

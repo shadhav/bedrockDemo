@@ -73,6 +73,16 @@
       <p>Stability AI is a generative AI company with a goal to inspire global creativity and innovation.</p>
       <p><a href="#" onclick="openProviderDetails('stablediffusion')">View provider details</a></p>
     </div>
+    <div class="llm-section" onclick="jurrasic2()">
+      <h2>Jurrasic 2 by AI21 Labs </h2>
+      <p>AI21 Labs enables businesses to build generative AI powered solutions by providing API access to our proprietary best-in-class language models, driving innovation, unlocking new capabilities, scaling businesses, and much more..</p>
+      <p><a href="#" onclick="openProviderDetails('jurrasic2')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="geoLocation()">
+      <h2>Leverage Gen AI for traffic</h2
+      <p>Know where the go.</p>
+      <p><a href="#" onclick="openProviderDetails('geoLocation')">View provider details</a></p>
+    </div>
     <div class="llm-section" onclick="indexall()">
       <h2>Try out all</h2
       <p>All the LLM's in one page.</p>
@@ -92,6 +102,13 @@
     function openStabilityAI() {
       window.open("stablediffusion");
     }
+    function geoLocation() {
+      window.open("geoLocation");
+    }
+    function jurrasic2() {
+      window.open("jurrasic2");
+    }
+
     function openProviderDetails(provider) {
       if (provider === 'titan') {
         openTitan();
@@ -99,6 +116,12 @@
         openClaude();
       } else if (provider === 'indexall') {
         indexall();
+       }else if (provider === 'geoLocation') {
+        geoLocation();
+       }  
+       else if (provider === 'jurrasic2') {
+        jurrasic2();
+        
       } else if (provider === 'stablediffusion') {
         openStabilityAI();
       }

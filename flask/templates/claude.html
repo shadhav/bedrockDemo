@@ -69,7 +69,8 @@
     <label for="anthropicText">Try out Claude API:</label>
     <textarea id="anthropicText" name="anthropicText" rows="3" required></textarea>
     <br>
-    <button type="submit">Claude API</button> 
+    <button type="submit">Claude API</button>
+    <button type="submit"  onclick="openchatbot()">Claude Chatbot</button> 
   </form>
   <div id="anthropicResponse"></div>
   <hr>
@@ -108,11 +109,18 @@
       xhr.onreadystatechange = function() {
         if (xhr.readyState === 4 && xhr.status === 200) {
           var response = JSON.parse(xhr.responseText);
+          console.log("response", response)
+         // response = response.prediction.prediction
+          //console.log("response1", response)
           document.getElementById("anthropicResponse").textContent = response;
         }
       };
       xhr.send(JSON.stringify(payload));
     });
+
+    function openchatbot() {
+      window.open("claudechatbot");
+  }
   </script>
 </body>
 </html>
