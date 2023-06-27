@@ -711,7 +711,7 @@ def claude100K():
     payload = request.json
     body = json.loads(payload['body'])
     input_text = body.get('prompt', '')
-    # api_key = os.environ.get('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')
+    # api_key = os.environ.get('')
     # if api_key is None:
     #     return jsonify({'error': 'API key not found'}), 500
     client = anthropic.Client(ANTHROPIC_API_KEY)
