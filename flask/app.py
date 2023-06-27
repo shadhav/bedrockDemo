@@ -9,6 +9,8 @@ import os
 import time
 import boto3
 from botocore.config import Config
+from langchain.chains import ConversationalRetrievalChain
+from langchain.schema import BaseMessage
 from botocore.exceptions import ClientError
 import json
 from PIL import Image
@@ -19,6 +21,8 @@ from base64 import b64decode
 import boto3
 import os
 import sys
+import glob
+from PyPDF2 import PdfReader
 import anthropic
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory
@@ -35,7 +39,23 @@ from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_
 from langchain.schema import BaseMessage
 from langchain.llms.bedrock import Bedrock
 from langchain import PromptTemplate
+from langchain.docstore.document import Document
+from langchain.docstore.in_memory import InMemoryDocstore
+from langchain.text_splitter import CharacterTextSplitter, RecursiveCharacterTextSplitter
 from flask import Flask, jsonify, request
+from langchain.document_loaders.pdf import (
+    MathpixPDFLoader,
+    OnlinePDFLoader,
+    PDFMinerLoader,
+    PDFMinerPDFasHTMLLoader,
+    PDFPlumberLoader,
+    PyMuPDFLoader,
+    PyPDFDirectoryLoader,
+    PyPDFium2Loader,
+    PyPDFLoader,
+    UnstructuredPDFLoader,
+)
+from tika import parser
 
 app = Flask(__name__)
 # AWS API credentials
@@ -442,18 +462,94 @@ def predict_conversation():
     prediction = conversation.predict(input=input_text)
     print("prediction:", prediction)
     # Return the prediction as a JSON response
-    return jsonify(prediction)
-    
-    
-bedrock_client = boto3.client(service_name='bedrock', region_name='us-east-1', endpoint_url='https://bedrock.us-east-1.amazonaws.com', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+    return prediction
+
+
+# bedrock_client = boto3.client(service_name='bedrock', region_name='us-east-1', endpoint_url='https://bedrock.us-east-1.amazonaws.com', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+# # Initialize Bedrock embeddings
+# br_embeddings = BedrockEmbeddings(client=bedrock_client)
+# print(f"br_embeddings: {br_embeddings}")
+# # Load documents from CSV
+# loader = CSVLoader("Prepayment-Monitoring-Report_2023Q1.csv")
+# documents_aws = loader.load()
+# print(f"Number of documents={len(documents_aws)}")
+# # Split and chunk documents
+# docs = CharacterTextSplitter(chunk_size=2000, chunk_overlap=400, separator=",").split_documents(documents_aws)
+# print(f"Number of documents after split and chunking={len(docs)}")
+# # Create FAISS vector store from documents
+# vectorstore_faiss_aws = FAISS.from_documents(
+#     documents=docs,
+#     embedding=br_embeddings
+# )
+#print(f"vectorstore_faiss_aws: number of elements in the index={vectorstore_faiss_aws.index.ntotal}::")
 # Initialize Bedrock embeddings
+# Set up the Bedrock client and embeddings
+# bedrock_client = boto3.client(
+#     service_name='bedrock',
+#     region_name='us-east-1',
+#     endpoint_url='https://bedrock.us-east-1.amazonaws.com',
+#     aws_access_key_id=aws_access_key,
+#     aws_secret_access_key=aws_secret_key
+# )
+# br_embeddings = BedrockEmbeddings(client=bedrock_client)
+# # Specify the directory path where the PDF files are located
+# pdf_directory = "rag_data"
+# # Create a PyPDFDirectoryLoader to load the PDF files
+# loader = PyPDFDirectoryLoader(pdf_directory)
+# # Load the documents from the PDF files
+# documents = loader.load()
+# # Split and chunk the documents
+# chunk_size = 2000
+# chunk_overlap = 400
+# separator = ","
+# docs = []
+# for document in documents:
+#     text = document.page_content
+#     text_length = len(text)
+#     start = 0
+#     while start < text_length:
+#         end = min(start + chunk_size, text_length)
+#         chunk = text[start:end]
+#         docs.append(chunk)
+#         start += chunk_size - chunk_overlap
+# print(f"Number of documents after split and chunking: {len(docs)}")
+# # Create a FAISS vector store
+# vectorstore_faiss = FAISS(
+#     embedding_function=br_embeddings,
+#     index=None,  # Specify the index if you have a pre-existing index
+#     docstore=InMemoryDocstore(),  # Create a MemoryDocStore as the docstore
+#     index_to_docstore_id=None,  # Specify the index_to_docstore_id if you have a pre-existing index_to_docstore_id
+# )
+# # Prepare documents for indexing
+# documents = [Document(page_content=text) for text in docs]
+# print(f"Number of documents for indexing: {len(documents)}")
+# print(f"First document for indexing: {documents[0]}")
+# # Add documents to the vector store
+# vectorstore_faiss.add_documents(documents)
+# # Update the vector store with the embeddings
+# vectorstore_faiss.update_embeddings()
+# # Example: Get the number of documents in the vector store
+# num_documents = vectorstore_faiss.get_document_count()
+# print(f"Number of documents in the vector store: {num_documents}")
+###############
+bedrock_client = boto3.client(service_name='bedrock', region_name='us-east-1', endpoint_url='https://bedrock.us-east-1.amazonaws.com', aws_access_key_id=aws_access_key, aws_secret_access_key=aws_secret_key)
+# # Initialize Bedrock embeddings
 br_embeddings = BedrockEmbeddings(client=bedrock_client)
-# Load documents from CSV
-loader = CSVLoader("Amazon_SageMaker_FAQs.csv")
-documents_aws = loader.load()
-print(f"Number of documents={len(documents_aws)}")
+print(f"br_embeddings: {br_embeddings}")
+loader = PyPDFDirectoryLoader('./rag_data2')
+
+# Load the documents from the PDF files
+documents = loader.load()
+# Split and chunk the documents
+text_splitter = RecursiveCharacterTextSplitter(
+    # Set a really small chunk size, just to show.
+    chunk_size = 1000,
+    chunk_overlap  = 100,
+    separators = ["\n\n", "\n", " ", "",',']
+)
+docs = text_splitter.split_documents(documents)
+
 # Split and chunk documents
-docs = CharacterTextSplitter(chunk_size=2000, chunk_overlap=400, separator=",").split_documents(documents_aws)
 print(f"Number of documents after split and chunking={len(docs)}")
 # Create FAISS vector store from documents
 vectorstore_faiss_aws = FAISS.from_documents(
@@ -461,7 +557,9 @@ vectorstore_faiss_aws = FAISS.from_documents(
     embedding=br_embeddings
 )
 print(f"vectorstore_faiss_aws: number of elements in the index={vectorstore_faiss_aws.index.ntotal}::")
-# Create a function to format the chat history for ConversationalRetrievalChain
+
+
+# We are also providing a different chat history retriever which outputs the history as a Claude chat (ie including the \n\n)
 _ROLE_MAP = {"human": "\n\nHuman: ", "ai": "\n\nAssistant: "}
 def _get_chat_history(chat_history):
     buffer = ""
@@ -474,21 +572,97 @@ def _get_chat_history(chat_history):
             ai = "\n\nAssistant: " + dialogue_turn[1]
             buffer += "\n" + "\n".join([human, ai])
         else:
-            raise ValueError(f"Unsupported chat history format: {type(dialogue_turn)}. Full chat history: {chat_history}")
+            raise ValueError(
+                f"Unsupported chat history format: {type(dialogue_turn)}."
+                f" Full chat history: {chat_history} "
+            )
     return buffer
-# Initialize the Conversational Retrieval Chain
-cl_llm = Bedrock(model_id="anthropic.claude-v1", client=bedrock_client, model_kwargs={"max_tokens_to_sample": 500})
-memory_chain = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-qa = ConversationalRetrievalChain.from_llm(
-    llm=cl_llm,
-    retriever=vectorstore_faiss_aws.as_retriever(),
-    memory=memory_chain,
-    get_chat_history=_get_chat_history,
-    condense_question_prompt=CONDENSE_QUESTION_PROMPT,
-    chain_type='stuff',
-)
+# # the condense prompt for Claude
+# condense_prompt_claude = PromptTemplate.from_template("""{chat_history}
+
+# Answer only with the new question.
+
+
+# Human: How would you ask the question considering the previous conversation: {question}
+
+
+# Assistant: Question:""")
+
+# # recreate the Claude LLM with more tokens to sample - this provide longer responses but introduces some latency
+# cl_llm = Bedrock(model_id="anthropic.claude-v1", client=bedrock_client, model_kwargs={"max_tokens_to_sample": 500})
+# print("I am there")
+# memory_chain = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+# print("I am here")
+# qa = ConversationalRetrievalChain.from_llm(
+#     llm=cl_llm, 
+#     retriever=vectorstore_faiss_aws.as_retriever(), 
+#     #retriever=vectorstore_faiss_aws.as_retriever(search_type='similarity', search_kwargs={"k": 8}),
+#     memory=memory_chain,
+#     get_chat_history=_get_chat_history,
+#     #verbose=True,
+#     condense_question_prompt=condense_prompt_claude, 
+#     chain_type='stuff', # 'refine',
+#     #max_tokens_limit=300
+# )
+
+# # the LLMChain prompt to get the answer. the ConversationalRetrievalChange does not expose this parameter in the constructor
+# qa.combine_docs_chain.llm_chain.prompt = PromptTemplate.from_template("""
+# {context}
+
+
+# Human: Use at maximum 3 sentences to answer the question inside the <q></q> XML tags. 
+
+# <q>{question}</q>
+
+# Do not use any XML tags in the answer.
+
+# Assistant:""")
+
+
+# # Create a function to format the chat history for ConversationalRetrievalChain
+# _ROLE_MAP = {"human": "\n\nHuman: ", "ai": "\n\nAssistant: "}
+# def _get_chat_history(chat_history):
+#     buffer = ""
+#     for dialogue_turn in chat_history:
+#         if isinstance(dialogue_turn, BaseMessage):
+#             role_prefix = _ROLE_MAP.get(dialogue_turn.type, f"{dialogue_turn.type}: ")
+#             buffer += f"\n{role_prefix}{dialogue_turn.content}"
+#         elif isinstance(dialogue_turn, tuple):
+#             human = "\n\nHuman: " + dialogue_turn[0]
+#             ai = "\n\nAssistant: " + dialogue_turn[1]
+#             buffer += "\n" + "\n".join([human, ai])
+#         else:
+#             raise ValueError(f"Unsupported chat history format: {type(dialogue_turn)}. Full chat history: {chat_history}")
+#     return buffer
+# Initialize the Conversational Retrieval Chain
+# cl_llm = Bedrock(model_id="anthropic.claude-v1", client=bedrock_client, model_kwargs={"max_tokens_to_sample": 500})
+# memory_chain = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+# qa = ConversationalRetrievalChain.from_llm(
+#     llm=cl_llm,
+#     retriever=vectorstore_faiss_aws.as_retriever(),
+#     memory=memory_chain,
+#     get_chat_history=_get_chat_history,
+#     condense_question_prompt=CONDENSE_QUESTION_PROMPT,
+#     chain_type='stuff',
+# )
 chathistory1 = []
+_template1 = """Given the following conversation and a follow up question, rephrase the follow up question to be a standalone question, in its original language.
+
+Chat History:
+{chat_history}
+Follow Up Input: {question}
+Standalone question:"""
+
+CONDENSE_QUESTION_PROMPT1 = PromptTemplate.from_template(_template1)
+
+prompt_template1 = """Use the following pieces of context to answer the question at the end. If you don't know the answer, use your judgement to answer from your knowledge and be precise. Dont fake the answer.
+
+{context}
+
+Question: {question}
+Helpful Answer:"""
 
 @app.route('/api/conversation/predict1', methods=['POST'])
 def predict_conversation1():
@@ -503,7 +677,7 @@ def predict_conversation1():
     memory=memory_chain,
     get_chat_history=_get_chat_history,
     verbose = True,
-    #condense_question_prompt=CONDENSE_QUESTION_PROMPT,
+    condense_question_prompt=CONDENSE_QUESTION_PROMPT1,
     chain_type='stuff',
 )
 
@@ -522,7 +696,7 @@ def predict_conversation1():
     # Append the new question to the chat history
     trychat.append((question, ''))
     # Generate the prediction from the Conversational Retrieval Chain
-    print(CONDENSE_QUESTION_PROMPT.template)
+    print(CONDENSE_QUESTION_PROMPT1.template)
     prediction = qa.run(question=question)
     print("prediction:",prediction)
     
@@ -531,16 +705,16 @@ def predict_conversation1():
 
 
 
-
+ANTHROPIC_API_KEY = ''
 @app.route('/api/conversation/claude100K', methods=['POST'])
 def claude100K():
     payload = request.json
     body = json.loads(payload['body'])
     input_text = body.get('prompt', '')
-    api_key = os.environ.get('')
-    if api_key is None:
-        return jsonify({'error': 'API key not found'}), 500
-    client = anthropic.Client(api_key)
+    # api_key = os.environ.get('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')
+    # if api_key is None:
+    #     return jsonify({'error': 'API key not found'}), 500
+    client = anthropic.Client(ANTHROPIC_API_KEY)
     response = client.completion(
         prompt=f"{anthropic.HUMAN_PROMPT}{input_text}{anthropic.AI_PROMPT}",
         model="claude-1",

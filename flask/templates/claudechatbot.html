@@ -17,28 +17,37 @@
         }
         .chat-container h1 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
         .chat-messages {
-            max-height: 300px;
+            max-height: 500px;
             overflow-y: auto;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             padding: 10px;
+            background-color: #fff;
         }
         .chat-messages p {
             margin: 0 0 10px 0;
         }
+        .chat-messages ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        .chat-messages li {
+            margin-bottom: 5px;
+        }
         .user-input {
             display: flex;
+            margin-top: 20px;
         }
         .user-input input[type="text"] {
             flex: 1;
             padding: 5px;
             border: 1px solid #ccc;
             border-radius: 4px;
-            margin-right: 10px;
+            margin-right: 20px;
         }
         .user-input button {
             padding: 5px 10px;
@@ -72,32 +81,47 @@
                 "contentType": "application/json",
                 "accept": "*/*",
                 "body": JSON.stringify({
-                  "prompt": userInput,
-                  "max_tokens_to_sample": 300,
-                  "temperature": 0.5,
-                  "top_k": 250,
-                  "top_p": 1,
-                  "stop_sequences": ["\n\nHuman:"]
+                    "prompt": userInput,
+                    "max_tokens_to_sample": 300,
+                    "temperature": 0.5,
+                    "top_k": 250,
+                    "top_p": 1,
+                    "stop_sequences": ["\n\nHuman:"]
                 })
-              };
+            };
             var xhr = new XMLHttpRequest();
             xhr.open("POST", "/api/conversation/predict1", true);
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-            var response = JSON.parse(xhr.responseText);
-            console.log("response", response)
-         // response = response.prediction.prediction
-          //console.log("response1", response)
-          var botResponse = response;
-            var botMessageElement = document.createElement("p");
-            botMessageElement.innerHTML = "<strong>Claude Bot:</strong> " + botResponse;
-            document.getElementById("chatMessages").appendChild(botMessageElement);
+                if (xhr.readyState === 4 && xhr.status === 200) {
+                    var response = JSON.parse(xhr.responseText);
+                    console.log("response", response)
+                    var botResponse = formatBotResponse(response);
+                    var botResponse = formatBotResponse(response);
+                    var botMessageElement = document.createElement("p");
+                    botMessageElement.innerHTML = "<strong>Claude Bot:</strong> " + botResponse;
+                    document.getElementById("chatMessages").appendChild(botMessageElement);
+                }
+            };
+            xhr.send(JSON.stringify(payload));
+            document.getElementById("userInput").value = "";
+        });
+        function formatBotResponse(response) {
+            var formattedResponse = "";
+            if (response) {
+                var prediction = response;
+                if (Array.isArray(prediction)) {
+                    formattedResponse = "<ul>";
+                    prediction.forEach(function (item) {
+                        formattedResponse += "<li>" + item + "</li>";
+                    });
+                    formattedResponse += "</ul>";
+                } else {
+                    formattedResponse = prediction;
+                }
+            }
+            return formattedResponse;
         }
-      };
-      xhr.send(JSON.stringify(payload));
-      document.getElementById("userInput").value = "";
-    });
     </script>
 </body>
 </html>
