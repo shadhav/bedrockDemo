@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Stable-diffusion Image API Call</title>
+  <style>
+    /* CSS styles for Stability page */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h2 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    textarea {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    #imageResponse {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+    #imageResponse img {
+      max-width: 500px;
+      max-height: 500px;
+      display: block;
+      margin: 0 auto;
+    }
+    .details {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #F2F2F2;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    .details h3 {
+      color: #333;
+      margin-top: 0;
+    }
+    .details pre {
+      background-color: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h2>Stable-diffusion Image API Call</h2>
+  <p>Stability AI is a generative AI company with a goal to inspire global creativity and innovation.</p>
+  <div class="use-case" onclick="openIndex2()">
+    <h3>Image API</h3>
+    <p>Generate an image based on the given text using the Stable-diffusion model.</p>
+  </div>
+  <hr>
+  <form id="imageForm">
+    <label for="imageText">Try out Stability API:</label>
+    <textarea id="imageText" name="imageText" rows="3" required></textarea>
+    <br>
+    <button type="submit">Stable diffusion API</button>
+  </form>
+  <div id="imageResponse"></div>
+  <hr>
+  <div class="details">
+    <h3>API Structure</h3>
+    <pre>
+{
+  "modelId": "stability.stable-diffusion-xl",
+  "contentType": "application/json",
+  "accept": "application/json",
+  "body": "{\"text_prompts\":[{\"text\":\"give me an aws logo\"}],\"cfg_scale\":10,\"seed\":0,\"steps\":50}"
+}
+    </pre>
+  </div>
+  <script>
+    document.getElementById("imageForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+      var imageText = document.getElementById("imageText").value;
+      var payload = {
+        "modelId": "stability.stable-diffusion-xl",
+        "contentType": "application/json",
+        "accept": "application/json",
+        "body": JSON.stringify({
+          "text_prompts": [
+          {"text": imageText}
+          ],
+          "cfg_scale": 10,
+          "seed": 0,
+          "steps": 50
+        })
+      };
+      var xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/call-python2", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+      xhr.responseType = "json";
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === 4) {
+          if (xhr.status === 200) {
+            var response = xhr.response;
+            if (response.result === "success" && response.artifacts.length > 0) {
+              var base64Data = response.artifacts[0].base64;
+              var imageUrl = "data:image/jpeg;base64," + base64Data;
+              var imageElement = document.createElement("img");
+              imageElement.src = imageUrl;
+              document.getElementById("imageResponse").innerHTML = "";
+              document.getElementById("imageResponse").appendChild(imageElement);
+            } else {
+              document.getElementById("imageResponse").textContent = "Image API failed to generate the image.";
+            }
+          } else {
+            document.getElementById("imageResponse").textContent = "Image API request failed.";
+          }
+        }
+      };
+      xhr.send(JSON.stringify(payload));
+    });
+    function openIndex2() {
+      window.open("index2");
+    }
+  </script>
+</body>
+</html>

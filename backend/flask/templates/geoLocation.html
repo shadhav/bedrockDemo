@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<meta name="referrer" content="no-referrer-when-downgrade" />
+<html>
+<head>
+	<title>Top Congestion in a city</title>
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  height: 300px; /* Should be removed. Only for demonstration */
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+header{
+	background:#333;
+	color:#fff;
+	padding:20px;
+	text-align: center;
+	border-bottom: 4px #000 solid;
+	margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+	<header>
+		<h1>Top Traffic Congestion in a city - Using Bedrock and AWS Serverless Services</h1>
+	</header>
+
+<div class="row">
+  <div class="column">
+			<form id="searchForm" action="">
+				<h5>Enter Location:</h5>
+				<input type="text" id="location" placeholder="City, State"><br>
+				<h5>Select Foundation Model</h5>
+				<select id="modelId" name="modelId" size="5">
+					<option value="amazon.titan-tg1-large">amazon.titan-tg1-large</option>
+					<option value="ai21.j2-jumbo-instruct">ai21.j2-jumbo-instruct</option>
+					<option value="ai21.j2-grande-instruct">ai21.j2-grande-instruct</option>
+					<option value="anthropic.claude-v1">anthropic.claude-v1</option>
+					<option value="anthropic.claude-instant-v1">anthropic.claude-instant-v1</option>
+				</select><br><br>
+				<input type="submit" value="Search">
+				<div id="promptDisplay"></div>
+			</form>
+
+  </div>
+  <div class="column" id="result">
+  </div>
+  <div class="column" id="mapframe">
+  </div>
+</div>
+
+		<script>
+			$(document).ready(function () {
+				$('#searchForm').submit(function (e) {
+					e.preventDefault();
+					document.getElementById("result").innerHTML = "";
+					document.getElementById("mapframe").innerHTML = "";
+					document.getElementById("promptDisplay").innerHTML = "";
+					var location = $('#location').val();
+					var modelId = $('#modelId').val();
+					
+					var promptTextFull = "Where is the most traffic congestion in " + location + "? Limit your response to only one location. What is the common cause of this traffic congestion? What is the latitude and longitude of this location?"
+					$('#promptDisplay').append('<h5>Composed prompt:</h5>')
+					$('#promptDisplay').append(promptTextFull)
+					$('#promptDisplay').append('<br>')
+					console.log(promptTextFull);
+					$.ajax({
+						method: 'POST',
+						url: `https://7g1hie6dq3.execute-api.us-east-1.amazonaws.com/v1/congestion`,
+						dataType: 'json',
+						data: JSON.stringify({
+							promptText: promptTextFull,
+							modelId: $('#modelId').val(),
+						})
+					}).done(function (data) {
+						console.log(data);
+						$('#result').append('<h2>Most congested location</h2>')
+						$('#result').append(data['body'])
+						$('#result').append('<br>')
+						$('#result').append('<h5>Composed prompt for generating maps iFrame:</h5>')
+						$('#result').append('From the latitude and longitude coordinates above, create a google maps iframe')
+						$('#result').append('<br>')						
+						$('#mapframe').append('<br>')
+						$('#mapframe').append(data['body_iframe'])
+						$('#mapframe').append('<br>')
+					});
+				});
+			});
+		</script>
+</body>
+</html>

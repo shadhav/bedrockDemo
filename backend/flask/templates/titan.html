@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Amazon Titan Text</title>
+  <style>
+    /* CSS styles for Titan page */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+    h1 {
+      color: #333;
+    }
+    form {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    textarea, input[type="number"] {
+      width: 100%;
+      padding: 5px;
+      margin-bottom: 10px;
+    }
+    button[type="submit"] {
+      padding: 10px 20px;
+      background-color: #333;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+    }
+    #response {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+    }
+    .use-case {
+      margin-bottom: 20px;
+      padding: 20px;
+      background-color: #F2F2F2;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .use-case:hover {
+      background-color: #E0E0E0;
+    }
+    .use-case h3 {
+      color: #333;
+      margin-top: 0;
+    }
+    .use-case p {
+      margin-bottom: 10px;
+    }
+    .details {
+      margin-top: 40px;
+      padding: 20px;
+      background-color: #F2F2F2;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    .details h3 {
+      color: #333;
+      margin-top: 0;
+    }
+    .details pre {
+      background-color: #fff;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body>
+  <h1>Titan Text by Amazon</h1>
+  <p>Amazon Titan Text is a 4k model. Amazon is a leader in applying ML to e-commerce, cloud computing, online advertising, and digital streaming services. The Amazon Titan models leverage Amazon’s 20+ years of ML experience.</p>
+  <h2>Use cases</h2>
+  <div class="use-case" onclick="openIndex1()">
+    <h3>Try out Titan API</h3>
+    <p>Learn about the Titan API.</p>
+  </div>
+  <div class="use-case" onclick="openIndex2()">
+    <h3>Summarization</h3>
+    <p>Create a concise summary of a given text.</p>
+  </div>
+  <div class="use-case" onclick="openIndex3()">
+    <h3>Amazon Chatbot</h3>
+    <p>Build a chatbot powered by Amazon Titan to provide automated responses and assistance.</p>
+  </div>
+  <div class="use-case" onclick="openIndex5()">
+    <h3>Building Product Description</h3>
+    <p>Generate compelling descriptions for products using Amazon Titan.</p>
+  </div>
+  <hr>
+  <div class="details">
+    <h3>API Structure</h3>
+    <pre>
+{
+  "modelId": "amazon.titan-tg1-large",
+  "contentType": "application/json",
+  "accept": "*/*",
+  "body": "{\"inputText\":\"\",\"textGenerationConfig\":{\"maxTokenCount\":4096,\"stopSequences\":[],\"temperature\":0,\"topP\":1}}"
+}
+    </pre>
+  </div>
+  <script>
+    function openIndex1() {
+      window.open("index1");
+    }
+    function openIndex2() {
+      window.open("index2");
+    }
+    function openIndex3() {
+      window.open("index3");
+    }
+    function openIndex5() {
+      window.open("index5");
+    }
+  </script>
+</body>
+</html>

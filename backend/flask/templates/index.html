@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Amazon Bedrock</title>
+  <style>
+    /* CSS for styling the page */
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #F2F2F2;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 4px;
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .llm-section {
+      margin-top: 40px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    .llm-section:hover {
+      cursor: pointer;
+      background-color: #F2F2F2;
+    }
+    h2 {
+      color: #333;
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+    p {
+      color: #666;
+      margin-bottom: 15px;
+    }
+    a {
+      color: #007BFF;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    a:hover {
+      text-decoration: underline;
+      color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Amazon Bedrock</h1>
+    <p>Amazon Bedrock is a new service that makes FMs from Amazon and leading AI startups including AI21 Labs, Anthropic, and Stability AI accessible via an API. Bedrock is the easiest way for customers to build and scale generative AI-based applications using FMs, democratizing access for all builders.</p>
+    <div class="llm-section" onclick="openTitan()">
+      <h2>Amazon Titan By Amazon</h2>
+      <p>Amazon is a leader in applying ML to e-commerce, cloud computing, online advertising, and digital streaming services. The Amazon Titan models leverage Amazon’s 20+ years of ML experience.</p>
+      <p><a href="#" onclick="openProviderDetails('titan')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="openClaude()">
+      <h2>Claude By Anthropic</h2>
+      <p>Anthropic is an AI safety and research company offering the Claude family of large language models. These models are purpose-built for AI-based assistance use-cases such as obtaining customer service or comprehending documents.</p>
+      <p><a href="#" onclick="openProviderDetails('claude')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="openStabilityAI()">
+      <h2>Stable Diffusion By Stability AI</h2>
+      <p>Stability AI is a generative AI company with a goal to inspire global creativity and innovation.</p>
+      <p><a href="#" onclick="openProviderDetails('stablediffusion')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="jurrasic2()">
+      <h2>Jurrasic 2 by AI21 Labs </h2>
+      <p>AI21 Labs enables businesses to build generative AI powered solutions by providing API access to our proprietary best-in-class language models, driving innovation, unlocking new capabilities, scaling businesses, and much more..</p>
+      <p><a href="#" onclick="openProviderDetails('jurrasic2')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="geoLocation()">
+      <h2>Leverage Gen AI for traffic</h2
+      <p>Know where the go.</p>
+      <p><a href="#" onclick="openProviderDetails('geoLocation')">View provider details</a></p>
+    </div>
+    <div class="llm-section" onclick="indexall()">
+      <h2>Try out all</h2
+      <p>All the LLM's in one page.</p>
+      <p><a href="#" onclick="openProviderDetails('indexall')">View provider details</a></p>
+    </div>
+  </div>
+  <script>
+    function openTitan() {
+      window.open("titan");
+    }
+    function openClaude() {
+      window.open("claude");
+    }
+    function indexall() {
+      window.open("indexall");
+    }
+    function openStabilityAI() {
+      window.open("stablediffusion");
+    }
+    function geoLocation() {
+      window.open("geoLocation");
+    }
+    function jurrasic2() {
+      window.open("jurrasic2");
+    }
+
+    function openProviderDetails(provider) {
+      if (provider === 'titan') {
+        openTitan();
+      } else if (provider === 'claude') {
+        openClaude();
+      } else if (provider === 'indexall') {
+        indexall();
+       }else if (provider === 'geoLocation') {
+        geoLocation();
+       }  
+       else if (provider === 'jurrasic2') {
+        jurrasic2();
+        
+      } else if (provider === 'stablediffusion') {
+        openStabilityAI();
+      }
+    }
+  </script>
+</body>
+</html>

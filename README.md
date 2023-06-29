@@ -1,75 +1,70 @@
-# BedrockDemo
-Welcome to the bedrockDemo repository! This guide will assist you in setting up and running the BedRock demo using VS Code.
+# Getting Started with Create React App
 
-## Installation 
-- Clone this repository into your local development environment using VS Code
-- Check the [IAM Permission](https://github.com/shadhav/bedrockDemo/blob/main/README.md#iam-permission) before you proceed ahead 
-- Open the terminal in the VS code
-- Naviage to the working directory path in the terminal
-```/Users/shadhav/Documents/bedrockDemo/flask ``` the path will look like this 
-- In this path in the terminal install flask 
-```pip install flask```
-```pip install boto3-1.26.140-py3-none-any.whl --quiet```
-```pip install botocore-1.29.140-py3-none-any.whl --quiet```
-```pip install faiss-cpu==1.7.4 --quiet```
-```pip install pypdf==3.8.1 --quiet```
-```pip install langchain==0.0.190 --quiet```
-- Once these steps are completed, you are ready to proceed with the BedRock demo using VS Code. 
-- Run this command 
-```flask run```
-- Verify the deployment by navigating to your server address in
-your preferred browser.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-```sh
-127.0.0.1:5000
-```
+## Available Scripts
 
+In the project directory, you can run:
 
-## IAM Permission
-1. From the IAM console, perform the following steps:
-2. Select the IAM role associated with your user.
-3. Click on "Add Permissions" and choose "Create Inline Policies" from the dropdown list.
-4. Create a new inline policy and include the following permissions:
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": "bedrock:*",
-      "Resource": "*"
-    }
-  ]
-}
-```
-5. Add the following trust relationships:
-```
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "http://bedrock.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    },
-    {
-      "Sid": "",
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "http://sagemaker.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-```
-# UI of the app 
-![BedRock UI](flask/BedRockUI.png)
+### `npm start`
 
-## UI of the summarization page
-![Summarization UI](flask/SummarizationUI.png)
+Runs the app in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-## UI of the chatbot page
-![Chatbot UI](flask/TitanChatBot.png)
+The page will reload when you make changes.\
+You may also see any lint errors in the console.
+
+### `npm test`
+
+Launches the test runner in the interactive watch mode.\
+See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+
+### `npm run build`
+
+Builds the app for production to the `build` folder.\
+It correctly bundles React in production mode and optimizes the build for the best performance.
+
+The build is minified and the filenames include the hashes.\
+Your app is ready to be deployed!
+
+See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+
+### `npm run eject`
+
+**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+
+If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+
+Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+
+You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+
+## Learn More
+
+You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+
+To learn React, check out the [React documentation](https://reactjs.org/).
+
+### Code Splitting
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+
+### Analyzing the Bundle Size
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+
+### Making a Progressive Web App
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+
+### Advanced Configuration
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+
+### Deployment
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+
+### `npm run build` fails to minify
+
+This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
