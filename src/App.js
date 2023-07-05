@@ -1,20 +1,27 @@
 import './App.css';
 import { withAuthenticator, Button } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatbotApp from './ChatbotApp';
 
 const modelOptions = [
-    'Claude',
-    'Titan',
+    'Anthropic',
+    'Amazon',
     // 'Stable Diffusion',
     'AI21'
 ]
 
-function App({ signOut, user }) {
-    const [modelSelected, setModelSelected] = useState('Claude');
+const App = (props) => {
+    const [modelSelected, setModelSelected] = useState('Anthropic');
 
+    useEffect(() => {
+        setModelSelected(props.model)
+    }, [props.model]);
 
+    const openInTab = (option) => {
+        // setModelSelected(option)
+        window.open(`http://localhost:3000/${option.toLowerCase()}`)
+    }
 
     return (
         <div className="App">
@@ -27,7 +34,7 @@ function App({ signOut, user }) {
                         <span
                             key={option}
                             className={`model-option ${modelSelected === option ? 'active' : ''}`}
-                            onClick={() => setModelSelected(option)}
+                            onClick={() => openInTab(option)}
                         >
                             {option}
                         </span>

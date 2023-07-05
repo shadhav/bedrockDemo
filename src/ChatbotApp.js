@@ -15,14 +15,12 @@ const ChatbotApp = (props) => {
 
         if(props.modelSelected == "AI21") {
             setApiMethod(`/api/call-python4`)
-        } else if (props.modelSelected == "Titan") {
+        } else if (props.modelSelected == "Amazon") {
             setApiMethod(`/api/call-python1`)
         } else {
-            setApiMethod(`/api/conversation/predict-${props.modelSelected.toLowerCase()}`)
+            setApiMethod(`/api/conversation/predict-claude`)
         }
         
-
-
         setSelectedModel(props.modelSelected)
     }, [props.modelSelected]);
 
@@ -38,7 +36,7 @@ const ChatbotApp = (props) => {
         let payload = {}
 
         switch (selectedModel) {
-            case 'Claude':
+            case 'Anthropic':
                 payload = {
                     modelId: 'anthropic.claude-instant-v1',
                     contentType: 'application/json',
@@ -65,7 +63,7 @@ const ChatbotApp = (props) => {
                     frequencyPenalty: { scale: 0 }
                 };
                 break;
-            case 'Titan':
+            case 'Amazon':
                 payload = {
                     inputText: userInput,
                     textGenerationConfig: {
@@ -81,7 +79,8 @@ const ChatbotApp = (props) => {
         }
 
         // const 
-        if (selectedModel == "Titan") {
+        if (selectedModel == "Amazon") {
+            setUserInput('');
             fetch(apiMethod, {
                 method: 'POST',
                 headers: {
@@ -101,10 +100,11 @@ const ChatbotApp = (props) => {
                 .catch(error => {
                     console.error('Error:', error);
                 }).finally(() => {
-                    setUserInput('');
+                    
                     setIsBuffering(false)
                 });
         } else {
+            setUserInput('');
             fetch(apiMethod, {
                 method: 'POST',
                 headers: {
@@ -124,28 +124,31 @@ const ChatbotApp = (props) => {
                 .catch(error => {
                     console.error('Error:', error);
                 }).finally(() => {
-                    setUserInput('');
+                    
                     setIsBuffering(false)
                 });
         }
-        
-
-
     };
 
     const formatBotResponse = (response) => {
         const regexNumberedList = /^\d+\.\s/;
-        const regexBulletedList = /^[\-\*\+]\s/;
+        const regexBulletedList = /^[\-\*\+\•]/;
         const regexURL = /\b(?:[\w-]+\.)+(?:com)\b/i;
 
         const lines = response.trim().split('\n');
+        
+        console.log("length of lines tested:")
+        console.log(lines.length)
         let isNumberedList = false;
         let isBulletedList = false;
 
         lines.forEach(line => {
+            console.log(line)
             if (regexNumberedList.test(line)) {
+                console.log('contained numbered list')
                 isNumberedList = true;
             } else if (regexBulletedList.test(line)) {
+                console.log('contained bulleted list')
                 isBulletedList = true;
             }
         });
@@ -182,21 +185,55 @@ const ChatbotApp = (props) => {
     };
 
     const formatBotResponse2 = (response) => {
-        let formattedResponse = '';
-        if (response) {
-            const prediction = response;
-            if (Array.isArray(prediction)) {
-                formattedResponse = '<ul>';
-                prediction.forEach((item) => {
-                    formattedResponse += `<li>${item}</li>`;
-                });
-                formattedResponse += '</ul>';
-            } else {
-                formattedResponse = prediction;
+        const regexNumberedList = /^\d+\.\s/;
+        const regexBulletedList = /^[\-\*\+\•]/;
+        const regexURL = /\b(?:[\w-]+\.)+(?:com)\b/i;
+      
+        const lines = response.trim().split('\n');
+      
+        let isNumberedList = false;
+        let isBulletedList = false;
+      
+        const resultLines = [];
+      
+        lines.forEach((line, index) => {
+          if (regexNumberedList.test(line)) {
+            isNumberedList = true;
+            if (!isBulletedList && index > 0) {
+              resultLines.push('</ul>');
             }
+            if (!isNumberedList) {
+              resultLines.push('<ol>');
+            }
+            resultLines.push(`<li>${line.replace(regexNumberedList, '').replace(regexURL, '<a href="http://$&" target="_blank">$&</a>')}</li>`);
+            isBulletedList = false;
+          } else if (regexBulletedList.test(line)) {
+            isBulletedList = true;
+            if (!isNumberedList && index > 0) {
+              resultLines.push('</ol>');
+            }
+            if (!isBulletedList) {
+              resultLines.push('<ul>');
+            }
+            resultLines.push(`<li>${line.replace(regexBulletedList, '').replace(regexURL, '<a href="http://$&" target="_blank">$&</a>')}</li>`);
+            isNumberedList = false;
+          } else {
+            resultLines.push(line.replace(regexURL, '<a href="http://$&" target="_blank">$&</a>'));
+          }
+        });
+      
+        if (isNumberedList || isBulletedList) {
+          resultLines.push(isNumberedList ? '</ol>' : '</ul>');
         }
-        return formattedResponse;
-    };
+      
+        return resultLines.join('\n');
+      };
+
+    const clearChatHistory = () => {
+        setChatMessages([
+            { author: `${selectedModel} Bot`, message: `Welcome to the ${selectedModel} Chatbot!` }
+        ])
+    }
 
     return (
         <div className="chat-container">
@@ -223,8 +260,9 @@ const ChatbotApp = (props) => {
                     onChange={(e) => setUserInput(e.target.value)}
                     placeholder="Type your message..."
                 />
-                <button type="button" onClick={sendMessage}>Send</button>
+                <button type="button" onClick={sendMessage} disabled={isBuffering}>Send</button>
             </div>
+            <button type="button" className="ClearHistory" onClick={clearChatHistory} disabled={chatMessages.length === 1 ? true:false}>Clear Chat History</button>
         </div>
     );
 };
