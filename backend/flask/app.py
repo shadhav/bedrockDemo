@@ -57,6 +57,8 @@ from langchain.document_loaders.pdf import (
 )
 from tika import parser
 
+
+
 app = Flask(__name__)
 # AWS API credentials
 aws_access_key = ''
@@ -72,48 +74,6 @@ def index():
     current_directory = os.getcwd()
     print("print something1", current_directory)
     return render_template('index.html')
-
-@app.route('/index1')
-def index1():
-    return render_template('index1.html')
-
-@app.route('/indexall')
-def indexall():
-    return render_template('indexall.html')
-
-@app.route('/index2')
-def index2():
-    return render_template('index2.html')
-@app.route('/index3')
-def index3():
-    return render_template('index3.html')
-@app.route('/index5')
-def index5():
-    return render_template('index5.html')
-
-@app.route('/titan')
-def titan():
-    return render_template('titan.html')
-
-@app.route('/jurrasic2')
-def jurrasic2():
-    return render_template('jurrasic2.html')
-
-@app.route('/claude')
-def claude():
-    return render_template('claude.html')
-
-@app.route('/stablediffusion')
-def stablediffusion():
-    return render_template('stablediffusion.html')
-
-@app.route('/claudechatbot')
-def claudechatbot():
-    return render_template('claudechatbot.html')
-
-@app.route('/geoLocation')
-def location():
-    return render_template('geoLocation.html')
 
 
 @app.route('/api/call-python1', methods=['POST'])
@@ -164,8 +124,12 @@ def call_python1():
             k_region = hmac.new(k_date, aws_region.encode('utf-8'), hashlib.sha256).digest()
             k_service = hmac.new(k_region, aws_service.encode('utf-8'), hashlib.sha256).digest()
             signing_key = hmac.new(k_service, 'aws4_request'.encode('utf-8'), hashlib.sha256).digest()
+            print('signing_key')
+            print(signing_key)
             # Generate the signature
             signature = hmac.new(signing_key, string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest()
+            print('signature')
+            print(signature)
             # Generate the authorization header
             authorization_header = f'AWS4-HMAC-SHA256 Credential={aws_access_key}/{datestamp}/{aws_region}/{aws_service}/aws4_request, ' \
                                    f'SignedHeaders=content-type;host;x-amz-date, Signature={signature}'
@@ -255,7 +219,7 @@ def call_python2():
         'x-amz-date': timestamp,
         'Authorization': authorization_header
     }
-    print("Bodyyyyyy",payload['body'])
+    print("Body",payload['body'])
     response = requests.post(endpoint + path, headers=headers, data=payload['body'])
     print(response)
     # Process the response
@@ -264,70 +228,9 @@ def call_python2():
 
 
 
-
 # Request information
 anthropicendpoint = 'https://bedrock.us-east-1.amazonaws.com'
 anthropicpath = '/model/anthropic.claude-instant-v1/invoke'
-@app.route('/api/call-python3', methods=['POST'])
-def call_python3():
-    # API payload
-    payload = request.json
-    
-    print("Invking the api----------------------", payload)
-    # Generate a timestamp in ISO 8601 format
-    timestamp = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-    # Generate a date string in YYYYMMDD format
-    
-    datestamp = datetime.datetime.utcnow().strftime('%Y%m%d')
-    # Generate a canonical request
-    canonical_request = '\n'.join([
-        'POST',
-        anthropicpath,
-        '',
-        'content-type:application/json',
-        'host:' + anthropicendpoint.replace('https://', ''),
-        'x-amz-date:' + timestamp,
-        '',
-        'content-type;host;x-amz-date',
-        hashlib.sha256(payload['body'].encode('utf-8')).hexdigest()
-    ])
-    # Generate a string to sign
-    string_to_sign = '\n'.join([
-        'AWS4-HMAC-SHA256',
-        timestamp,
-        f'{datestamp}/{aws_region}/{aws_service}/aws4_request',
-        hashlib.sha256(canonical_request.encode('utf-8')).hexdigest()
-    ])
-    # Generate the signing key
-    key = ('AWS4' + aws_secret_key).encode('utf-8')
-    k_date = hmac.new(key, datestamp.encode('utf-8'), hashlib.sha256).digest()
-    k_region = hmac.new(k_date, aws_region.encode('utf-8'), hashlib.sha256).digest()
-    k_service = hmac.new(k_region, aws_service.encode('utf-8'), hashlib.sha256).digest()
-    signing_key = hmac.new(k_service, 'aws4_request'.encode('utf-8'), hashlib.sha256).digest()
-    # Generate the signature
-    signature = hmac.new(signing_key, string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest()
-    # Generate the authorization header
-    authorization_header = f'AWS4-HMAC-SHA256 Credential={aws_access_key}/{datestamp}/{aws_region}/{aws_service}/aws4_request, ' \
-                           f'SignedHeaders=content-type;host;x-amz-date, Signature={signature}'
-    # Make the API request
-    headers = {
-        'Content-Type': 'application/json',
-        'Host': anthropicendpoint.replace('https://', ''),
-        'x-amz-date': timestamp,
-        'Authorization': authorization_header
-    }
-    print(payload['body'])
-    response = requests.post(anthropicendpoint + anthropicpath, headers=headers, data=payload['body'])
-    print(response)
-    # Process the response
-    responsedata = response.json()
-    print(responsedata)
-    #print(responsedata['completion'])
-    responsedata = response.json()
-    print(responsedata['completion'])
-    output_text =responsedata['completion']
-    return jsonify(output_text)
-
 
 
 # Request information
@@ -659,12 +562,18 @@ Standalone question:"""
 
 CONDENSE_QUESTION_PROMPT1 = PromptTemplate.from_template(_template1)
 
+# prompt_template1 = """Use the following pieces of context to answer the question at the end. If you don't know the answer, use your judgement to answer from your knowledge and be precise. Dont fake the answer.
+
+# {context}
+
+# Question: {question}
+# Helpful Answer:"""
+
 prompt_template1 = """Use the following pieces of context to answer the question at the end. If you don't know the answer, use your judgement to answer from your knowledge and be precise. Dont fake the answer.
 
 {context}
 
-Question: {question}
-Helpful Answer:"""
+"""
 
 memory_chain = ConversationBufferMemory()
 
@@ -677,14 +586,14 @@ def predict_conversation1():
     cl_llm = Bedrock(model_id="anthropic.claude-v1", client=bedrock_client, model_kwargs={"max_tokens_to_sample": 500}) # change model_id here
     memory_chain = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
     qa = ConversationalRetrievalChain.from_llm(
-    llm=cl_llm,
-    retriever=vectorstore_faiss_aws.as_retriever(),
-    memory=memory_chain,
-    get_chat_history=_get_chat_history,
-    verbose = True,
-    condense_question_prompt=CONDENSE_QUESTION_PROMPT1,
-    chain_type='stuff',
-)
+        llm=cl_llm,
+        retriever=vectorstore_faiss_aws.as_retriever(),
+        memory=memory_chain,
+        get_chat_history=_get_chat_history,
+        verbose = True,
+        condense_question_prompt=CONDENSE_QUESTION_PROMPT1,
+        chain_type='stuff',
+    )
 
     print(payload)
     # Get the input text from the payload
@@ -787,6 +696,7 @@ def predict_conversation3():
     
     # Return the prediction as a JSON response
     return jsonify(prediction)
+
 
 ANTHROPIC_API_KEY = ''
 @app.route('/api/conversation/claude100K', methods=['POST'])
